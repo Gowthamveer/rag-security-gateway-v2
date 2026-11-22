@@ -5,6 +5,7 @@ from collections import defaultdict, deque
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from fastapi.responses import FileResponse
 
 import httpx
 import jwt
@@ -67,6 +68,11 @@ audit = Table("audit", metadata,
     Column("prev_hash", String(64), nullable=False), Column("hash", String(64), nullable=False),
     Column("created_at", String(40), nullable=False))
 metadata.create_all(DB)
+@app.get("/", include_in_schema=False)
+def dashboard():
+    return FileResponse(
+        Path(__file__).with_name("index.html")
+    )
 
 # Additive migration for databases created by the original starter schema. This deliberately
 # avoids destructive schema changes; production deployments should still use Alembic migrations.
